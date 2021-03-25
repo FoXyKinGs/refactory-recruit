@@ -1,6 +1,6 @@
 import Vuex from "vuex";
 import Vue from "vue";
-import { SET_DATA } from "./mutation-types";
+import Axios from 'axios'
 
 Vue.use(Vuex);
 
@@ -11,22 +11,29 @@ export default new Vuex.Store({
 
   getters: {
     getData: (state) => {
-      return state.lists;
+      return state.list;
     },
-    getCountData: () => {
-        return 0
+    getCountData: (state) => {
+        return state.list
     }
   },
 
   mutations: {
-    [SET_DATA](state, data) {
-      state.lists = data
+    setData(state, data) {
+      state.list = data
     },
   },
 
   actions: {
-    setDatas(context, data) {
-      context.commit('setData', data);
+    getDatas(context) {
+      return new Promise((resolve, reject) => {
+        Axios.get('https://jsonplaceholder.typicode.com/users').then((response) => {
+          context.commit('setData', response.data)
+          resolve(response.data)
+        }).catch((err) => {
+          reject(err.message)
+        })
+      })
     },
   },
 });

@@ -2,7 +2,8 @@
   <div class="main">
     <div class="main-title">{{ msg }}</div>
     <div class="user-count">
-      <div class="count">{{ count }}</div>
+      <div v-if="count === null" class="count">Wait</div>
+      <div v-else class="count">{{ count.length }}</div>
       Users
     </div>
     <div class="wrapper">
@@ -31,36 +32,25 @@
 </template>
 
 <script>
-import axios from "axios";
-import { mapState } from "vuex";
-import { INCREMENT } from "../mutation-types";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Users",
-  props: {
-    msg: String,
-  },
+  props: ['msg'],
   computed: {
-    users() {
-      return this.$store.getters.getData;
-    },
-    count() {
-      return this.$store.getters.getCountData;
-    },
-  },
-  mounted() {
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => {
-        this.setData(response.data);
-      })
-      .catch((error) => (this.loading = false));
+    ...mapGetters({
+      users: 'getData',
+      count: 'getCountData'
+    })
   },
   methods: {
-    setData(data) {
-      this.$store.dispatch("setData", data);
-    },
+    ...mapActions({
+      getData: 'getDatas'
+    })
   },
+  mounted() {
+    this.getData()
+  }
 };
 </script>
 
@@ -72,7 +62,7 @@ export default {
 }
 .count {
   color: #83dd8b;
-  font-weight: 800;
+  font-weight: bolder;
   margin-right: 10px;
 }
 .user-count {
@@ -80,4 +70,61 @@ export default {
   color: #646464;
   display: flex;
 }
+.wrapper{
+  margin: 0 -5px;
+}
+.wrapper::after{
+  content: '';
+  display: table;
+  clear: both;
+}
+.card {
+  float: left;
+  width: 43.5%;
+  padding: 10px;
+  margin: 10px 5px 0 25px;
+}
+
+.card .body-card{
+  padding: 30px 20px 20px 20px;
+  background-color: white;
+  width: 100%;
+  border-radius: 15px;
+}
+
+.card .body-card .title{
+  color: #e3e5e9;
+}
+
+.card .body-card .name{
+  font-size: 25px;
+}
+
+.card .body-card .wrapper-card{
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card .body-card .wrapper-card .website{
+  margin-top: 5px;
+  color: rgb(81, 243, 81);
+  font-weight: bolder;
+}
+
+.card .body-card .wrapper-card .email{
+  margin-top: 5px;
+}
+
+.card .body-card .wrapper-card .phone{
+  margin-top: 5px;
+}
+
+@media (max-width: 992px){
+  .card{
+    width: 100vh;
+    margin: 0;
+  }
+}
+
 </style>
